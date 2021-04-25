@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: minimal-quarkus-native-gitops
+    app.kubernetes.io/component: minimal-quarkus-native-gitops
+    app.kubernetes.io/instance: minimal-quarkus-native-gitops
+    app.openshift.io/runtime: quarkus-gitops
+  name: minimal-quarkus-native-gitops
+  namespace: greeting
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      deployment: minimal-quarkus-native
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        deployment: minimal-quarkus-native
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/greeting/minimal-quarkus-native@sha256:9a3615ff4c7b4545e193a832369619ab30cbb6e3aa648498f33f90538c1f3dba
+        imagePullPolicy: IfNotPresent
+        name: minimal-quarkus-native
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
